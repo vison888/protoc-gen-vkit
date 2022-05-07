@@ -1,0 +1,375 @@
+syntax = "proto3";
+
+package demo;
+
+option go_package = "./demo";
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+
+
+service FlowLogService {
+  // 获取分页列表
+  rpc Page(FlowLogPageReq) returns (FlowLogPageResp)
+    {
+        option (google.api.http) = {
+            post : "/rpc/speech/FlowLog.Page"
+            body : "*"
+        };
+    }
+
+    // 导出获取分页列表
+  rpc ExportPage(FlowLogExportPageReq) returns (FlowLogExportPageResp)
+  {
+      option (google.api.http) = {
+          post : "/rpc/speech/FlowLog.ExportPage"
+          body : "*"
+      };
+  }
+}
+
+
+message FlowLogTimeStat {
+  //vad 开始时间
+	int64 vad_start_time  = 1;
+  //vad 结束时间
+	int64 vad_end_time    = 2;
+  //nlp 消耗时间
+	int32 nlp_cost_time   = 3;
+  //nlp 开始时间
+	int64 nlp_start_time  = 4;
+  //nlp 结束时间
+	int64 nlp_end_time    = 5;
+  //asr 消耗时间
+	int32 asr_cost_time   = 6;
+  //asr 开始时间
+	int64 asr_start_time  = 7;
+  //asr 结束时间
+	int64 asr_end_time    = 8;
+}
+
+message FlowLog {
+  string id             = 1;
+  //设备sn
+	string device_sn       = 2;
+  //会话id
+	string session_id      = 3;
+  //交互id
+	string interact_id     = 4;
+  //asr文本
+	string asr_text        = 5;
+  //tts文本
+	string tts_text        = 6;
+  //技能id
+	string skill_id        = 7;
+  //意图id
+	string intent_id       = 8;
+  //状态
+	string flow_status     = 9;
+  //语音文件
+	string voice_file_path  = 10;    
+  //交互时间        
+	int64 create_time         = 11;  
+  //相关统计          
+	FlowLogTimeStat time_stat = 12;            
+}
+
+message FlowLogPageReq {
+    // 第几页，从1开始
+    int32 page = 1;
+    // 每页多少条
+    int32 size = 2 [(validate.rules).int32={lte: 100, gte: 10}];
+    //设备标识
+    string device_sn      = 3;
+    //开始时间戳
+    int64 start_time      = 4;
+    //结束时间戳
+    int64 end_time        = 5;
+}
+
+message FlowLogPageResp {
+  int32 code = 1;
+  string msg = 2;
+  //记录总数
+  int32 total = 3;
+  //数据列表
+  repeated FlowLog list = 4;
+}
+
+
+message FlowLogExportPageReq {
+    //设备标识
+    string device_sn      = 1;
+    //开始时间戳
+    int64 start_time      = 2;
+    //结束时间戳
+    int64 end_time        = 3;
+}
+
+message FlowLogExportPageResp {
+  int32 code = 1;
+  string msg = 2;
+  string file_url = 3;
+}
+service MatrixService {
+  // 添加矩阵
+  rpc AddMatrix(AddMatrixRequest) returns (AddMatrixResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/MatrixService.AddMatrix"
+      body: "*"
+    };
+  }
+  // 删除矩阵
+  rpc DelMatrix(DelMatrixRequest) returns (DelMatrixResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/MatrixService.DelMatrix"
+      body: "*"
+    };
+  }
+  // 获取矩阵
+  rpc GetMatrix(GetMatrixRequest) returns (GetMatrixResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/MatrixService.GetMatrix"
+      body: "*"
+    };
+  }
+  // 更新矩阵
+  rpc UpdateMatrix(UpdateMatrixRequest) returns (UpdateMatrixResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/MatrixService.UpdateMatrix"
+      body: "*"
+    };
+  }
+  // 矩阵列表
+  rpc ListMatrix(ListMatrixRequest) returns (ListMatrixResponse)
+    {
+        option (google.api.http) = {
+            post : "/rpc/tsm/MatrixService.ListMatrix"
+            body : "*"
+        };
+    }
+    // 矩阵推送
+    rpc PushMatrix(PushMatrixRequest) returns (PushMatrixResponse)
+    {
+        option (google.api.http) = {
+            post : "/rpc/tsm/MatrixService.PushMatrix"
+            body : "*"
+        };
+    }
+}
+
+message Matrix {
+  //矩阵id
+  string id = 1;
+  //矩阵名称  
+  string name = 2 [(validate.rules).string.min_len = 1];
+  //矩阵分类  
+  string rows = 3;
+}
+
+message AddMatrixRequest {
+  Matrix matrix = 1;
+}
+
+message AddMatrixResponse {
+  int32 code = 1;
+  string msg = 2;
+  Matrix matrix = 3;
+}
+
+message DelMatrixRequest {
+  string id = 1[(validate.rules).string.min_len = 1];
+}
+
+message DelMatrixResponse {
+  int32 code = 1;
+  string msg = 2;
+  string id = 3;
+}
+
+message UpdateMatrixRequest {
+  Matrix matrix = 1;
+}
+
+message UpdateMatrixResponse {
+  int32 code = 1;
+  string msg = 2;
+  Matrix matrix = 3;
+}
+
+message GetMatrixRequest {
+  string id = 1[(validate.rules).string.min_len = 1];
+}
+
+message GetMatrixResponse {
+  int32 code = 1;
+  string msg = 2;
+  Matrix matrix = 3;
+}
+
+message ListMatrixRequest {
+
+}
+
+message ListMatrixResponse {
+  int32 code = 1;
+  string msg = 2;
+  // 列表数量
+  int32 total = 3;
+  // 矩阵列表
+  repeated Matrix matrixs = 4;
+}
+
+message PushMatrixItem {
+  string device_sn = 1;
+  string device_type_id = 2;
+}
+
+
+message PushMatrixRequest {
+  string id = 1[(validate.rules).string.min_len = 1];
+  repeated PushMatrixItem devices = 2;
+}
+
+message PushMatrixResponse {
+  int32 code = 1;
+  string msg = 2;
+  repeated PushMatrixItem devices = 3;
+}
+service TaskService {
+  // 添加任务
+  rpc AddTask(AddTaskRequest) returns (AddTaskResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/TaskService.AddTask"
+      body: "*"
+    };
+  }
+  // 删除任务
+  rpc DelTask(DelTaskRequest) returns (DelTaskResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/TaskService.DelTask"
+      body: "*"
+    };
+  }
+  // 获取任务
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/TaskService.GetTask"
+      body: "*"
+    };
+  }
+  // 更新任务
+  rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse) {
+    option (google.api.http) = {
+      post: "/rpc/tsm/TaskService.UpdateTask"
+      body: "*"
+    };
+  }
+  // 任务列表
+  rpc ListTask(ListTaskRequest) returns (ListTaskResponse)
+    {
+        option (google.api.http) = {
+            post : "/rpc/tsm/TaskService.ListTask"
+            body : "*"
+        };
+    }
+  // 任务发送
+  rpc PushTask(PushTaskRequest) returns (PushTaskResponse)
+    {
+        option (google.api.http) = {
+            post : "/rpc/tsm/TaskService.PushTask"
+            body : "*"
+        };
+    }
+}
+
+message TaskBase {
+  //任务id
+  string id = 1;
+  //任务名称  
+  string name = 2;
+  //任务分类  
+  string group_code = 3;
+}
+
+message Task {
+  //任务id
+  string id = 1;
+  //任务名称  
+  string name = 2 [(validate.rules).string.min_len = 1];
+  //任务分类  
+  string group_code = 3 [(validate.rules).string.min_len = 1];
+  //任务节点数据
+  string list = 4;
+}
+
+message AddTaskRequest {
+  Task task = 1;
+}
+
+message AddTaskResponse {
+  int32 code = 1;
+  string msg = 2;
+  Task task = 3;
+}
+
+message DelTaskRequest {
+  string id = 1[(validate.rules).string.min_len = 1];
+}
+
+message DelTaskResponse {
+  int32 code = 1;
+  string msg = 2;
+  string id = 3;
+}
+
+message UpdateTaskRequest {
+  Task task = 1;
+}
+
+message UpdateTaskResponse {
+  int32 code = 1;
+  string msg = 2;
+  Task task = 3;
+}
+
+message GetTaskRequest {
+  string id = 1[(validate.rules).string.min_len = 1];
+}
+
+message GetTaskResponse {
+  int32 code = 1;
+  string msg = 2;
+  Task task = 3;
+}
+
+message ListTaskRequest {
+  // 第几页，从1开始
+  int32 page = 1;
+  // 每页多少条
+  int32 size = 2 [(validate.rules).int32={lte: 100, gte: 10}];
+}
+
+message ListTaskResponse {
+  int32 code = 1;
+  string msg = 2;
+  // 列表数量
+  int32 total = 3;
+  // 任务列表
+  repeated TaskBase tasks = 4;
+}
+
+message PushTaskItem {
+  string device_sn = 1;
+  string device_type_id = 2;
+}
+
+message PushTaskRequest {
+  string id = 1[(validate.rules).string.min_len = 1];
+  repeated PushTaskItem devices = 2;
+}
+
+message PushTaskResponse {
+  int32 code = 1;
+  string msg = 2;
+  repeated PushTaskItem devices = 3;
+}
