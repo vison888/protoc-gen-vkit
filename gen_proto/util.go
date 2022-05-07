@@ -161,8 +161,13 @@ func isASCIIDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
 
-func ReadModUrl() string {
-	fileReader, err := os.OpenFile("../go.mod", os.O_CREATE|os.O_RDWR, 0644)
+func ReadModUrl(modPath string) string {
+
+	modFilePath := modPath + "/go.mod"
+	if !CheckFileIsExist(modFilePath) {
+		return ""
+	}
+	fileReader, err := os.OpenFile(modFilePath, os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		logger.Infof("open file failed, err:%s", err)
 		return ""

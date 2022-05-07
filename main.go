@@ -33,8 +33,20 @@ func main() {
 		}
 	}
 
-	serverName := paramMap["serverName"]
+	serverName, b := paramMap["serverName"]
+	if !b {
+		logger.Info("serverName not exit")
+		panic(errors.New("serverName not exit"))
+	}
+
+	handlePath := ""
+	h, b := paramMap["handlePath"]
+	if b {
+		handlePath = h
+		gen_proto.CreateDir(handlePath)
+	}
 	gen_proto.CreateDir("./" + serverName)
+
 	//2、合并proto
 	err := gen_proto.MergeProto(&req, serverName)
 	if err != nil {
@@ -49,7 +61,9 @@ func main() {
 	}
 
 	gen_proto.GenerateClient(plugin, serverName)
-	gen_proto.GenerateServer(plugin, serverName)
+	if handlePath != "" {
+		gen_proto.GenerateServer(plugin, serverName, handlePath)
+	}
 
 	// 生成响应
 	stdout := plugin.Response()

@@ -13,9 +13,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func GenerateServer(plugin *protogen.Plugin, serverName string) error {
-	modUrl := ReadModUrl()
-	filePath := "../handler"
+func GenerateServer(plugin *protogen.Plugin, serverName string, handlePath string) error {
+	modUrl := ReadModUrl(handlePath + "/..")
+	filePath := handlePath
 	CreateDir(filePath)
 	configFile, err := os.OpenFile(filePath+"/handler.go", os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
@@ -44,7 +44,7 @@ func GenerateServer(plugin *protogen.Plugin, serverName string) error {
 		fileName = nameArr[len(nameArr)-1]
 		fileName = strings.ReplaceAll(fileName, ".proto", "")
 		// source/flow_log.proto
-		filePath := fmt.Sprintf("../handler/%s", fileName)
+		filePath := fmt.Sprintf("%s/%s", handlePath, fileName)
 
 		//server.go
 		importBuf.Write([]byte(fmt.Sprintf("%s_handler \"%s/handler/%s\"\n\t", fileName, modUrl, fileName)))
@@ -74,12 +74,23 @@ func GenerateServer(plugin *protogen.Plugin, serverName string) error {
 			WriteLine(fileWriter, fmt.Sprintf("// protoc-gen-vison %s", "v1.0.0"))
 			WriteLine(fileWriter)
 			WriteLine(fileWriter, "package ", fileName)
+
+			str, _ := os.Getwd()
+			logger.Infof("%s", str)
+			importPath := fmt.Sprintf("%s/proto/%s", ReadModUrl(handlePath+"/.."), serverName)
+			index := strings.Index(str, "/proto/")
+			if index > 0 {
+				logger.Infof("%s", str[:index])
+				logger.Infof("%s", str[index:])
+				importPath = fmt.Sprintf("%s%s/%s", ReadModUrl(str[:index]), str[index:], serverName)
+			}
+
 			WriteLine(fileWriter, fmt.Sprintf(`
 import (
 	context "context"
 
-	pb "%s/proto/%s"
-)`, ReadModUrl(), serverName))
+	pb "%s"
+)`, importPath))
 		}
 
 		serviceExistMap := make(map[string]bool)
