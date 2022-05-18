@@ -25,6 +25,41 @@ service FlowLogService {
           body : "*"
       };
   }
+
+  /*
+  以下 分别是 服务端 推送流， 客户端 推送流 ，双向流。
+  */
+  rpc GetStream (StreamReqData) returns (stream StreamResData)
+  {
+    option (google.api.http) = {
+        post : "/rpc/speech/stream.get"
+        body : "*"
+    };
+  }
+
+  rpc PutStream (stream StreamReqData) returns (StreamResData)
+  {
+    option (google.api.http) = {
+        post : "/rpc/speech/stream.put"
+        body : "*"
+    };
+  }
+
+  rpc AllStream (stream StreamReqData) returns (stream StreamResData)
+  {
+    option (google.api.http) = {
+        post : "/rpc/speech/stream.all"
+        body : "*"
+    };
+  }
+}
+//stream请求结构
+message StreamReqData {
+  string data = 1;
+}
+//stream返回结构
+message StreamResData {
+  string data = 1;
 }
 
 

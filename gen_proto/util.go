@@ -184,3 +184,16 @@ func ReadModUrl(modPath string) string {
 	}
 	return ""
 }
+
+func ReplaceList(source string, o ...string) string {
+	var name string
+	for k, v := range o {
+		if k%2 == 0 {
+			name = v
+			continue
+		}
+		logger.Infof("%s %s", name, v)
+		source = strings.ReplaceAll(source, name, v)
+	}
+	return source
+}
