@@ -132,7 +132,7 @@ type %s struct {
 
 				methodKey := fmt.Sprintf("%s)%s", service.GoName, methodDesc.Name)
 				serviceMethodKey := service.GoName + "." + methodDesc.Name
-				urlsBuf.Write([]byte(fmt.Sprintf("urls[\"%s\"] = \"%s\"\n\t", serviceMethodKey, methodDesc.Path)))
+				urlsBuf.Write([]byte(fmt.Sprintf("methodDescMap[\"%s\"] = []string{\"%s\", \"%t\", \"%t\"}\n\t", serviceMethodKey, methodDesc.Path, method.Desc.IsStreamingClient(), method.Desc.IsStreamingServer())))
 
 				if method.Desc.IsStreamingClient() && method.Desc.IsStreamingServer() {
 					serverBuf.Write([]byte(ReplaceList(allStreamServer, "${serviceName}", service.GoName, "${methodName}", method.GoName, "${req}", methodDesc.Request, "${resp}", methodDesc.Reply, "${methodPath}", methodDesc.Path)))
@@ -169,10 +169,10 @@ func GetLsit() []interface{} {
 }`, serverListBuf.String()))
 
 	WriteLine(configFile, fmt.Sprintf(`
-func GetUrlMap() map[string]string {
-	urls := make(map[string]string)
+func GetUrlMap() map[string][]string {
+	methodDescMap := make(map[string][]string)
 	%s
-	return urls
+	return methodDescMap
 }`, urlsBuf.String()))
 
 	logger.Infof("len %d", serverBuf.Len())

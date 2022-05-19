@@ -68,7 +68,7 @@ type %sClient struct {
 					WriteLine(fileWriter, ReplaceList(clientStreamClientFunc, "${serviceName}", service.GoName, "${methodName}", method.GoName, "${methodPath}", methodDesc.Path, "${req}", methodDesc.Request))
 				} else if method.Desc.IsStreamingServer() {
 					WriteLine(fileWriter, ReplaceList(serverStreamClient, "${serviceName}", service.GoName, "${methodName}", method.GoName, "${req}", methodDesc.Request, "${resp}", methodDesc.Reply))
-					WriteLine(fileWriter, ReplaceList(serverStreamClientFunc, "${serviceName}", service.GoName, "${methodName}", method.GoName, "${methodPath}", methodDesc.Path))
+					WriteLine(fileWriter, ReplaceList(serverStreamClientFunc, "${serviceName}", service.GoName, "${methodName}", method.GoName, "${methodPath}", methodDesc.Path, "${req}", methodDesc.Request))
 				} else {
 					WriteLine(fileWriter, ReplaceList(normalClientFunc, "${serviceName}", service.GoName, "${methodName}", method.GoName, "${req}", methodDesc.Request, "${resp}", methodDesc.Reply, "${methodPath}", methodDesc.Path))
 				}
