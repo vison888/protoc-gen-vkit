@@ -164,7 +164,7 @@ type %s struct {
 
 	WriteLine(configFile, fmt.Sprintf(`
 import (
-	"git.infore-robotics.cn/service-robotics-department-2/go-infore/grpcx"
+	"github.com/visonlv/go-vkit/grpcx"
 	%s
 )`, importBuf.String()))
 

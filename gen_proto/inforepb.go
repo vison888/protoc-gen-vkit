@@ -13,7 +13,7 @@ import (
 const (
 	contextPackage = protogen.GoImportPath("context")
 	grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
-	grpcxPackage   = protogen.GoImportPath("git.infore-robotics.cn/service-robotics-department-2/go-infore/grpcx")
+	grpcxPackage   = protogen.GoImportPath("github.com/visonlv/go-vkit/grpcx")
 )
 
 func GenerateInforePb(gen *protogen.Plugin) {
