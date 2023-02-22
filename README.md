@@ -1,2 +1,2 @@
-# protoc-gen-infore
+# protoc-gen-vkit
 

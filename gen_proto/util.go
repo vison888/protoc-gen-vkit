@@ -6,11 +6,15 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 
-	"github.com/visonlv/protoc-gen-vison/logger"
+	"github.com/visonlv/protoc-gen-vkit/logger"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/compiler/protogen"
 )
+
+const release = "v1.0.0"
+const deprecationComment = "// Deprecated: Do not use."
 
 var methodSets = make(map[string]int)
 
@@ -44,7 +48,19 @@ func LineExitIndex() int {
 	return 0
 }
 
-func buildHTTPRule(serverName string, m *protogen.Method, rule *annotations.HttpRule) *methodDesc {
+func protocVersion(gen *protogen.Plugin) string {
+	v := gen.Request.GetCompilerVersion()
+	if v == nil {
+		return "(unknown)"
+	}
+	var suffix string
+	if s := v.GetSuffix(); s != "" {
+		suffix = "-" + s
+	}
+	return fmt.Sprintf("v%d.%d.%d%s", v.GetMajor(), v.GetMinor(), v.GetPatch(), suffix)
+}
+
+func buildHTTPRule(m *protogen.Method, rule *annotations.HttpRule) *methodDesc {
 	var (
 		path         string
 		method       string
@@ -74,7 +90,7 @@ func buildHTTPRule(serverName string, m *protogen.Method, rule *annotations.Http
 	}
 	body = rule.Body
 	responseBody = rule.ResponseBody
-	md := buildMethodDesc(serverName, m, method, path)
+	md := buildMethodDesc(m, method, path)
 	if method == "GET" || method == "DELETE" {
 		if body != "" {
 			_, _ = fmt.Fprintf(os.Stderr, "\u001B[31mWARN\u001B[m: %s %s body should not be declared.\n", method, path)
@@ -101,7 +117,7 @@ func buildHTTPRule(serverName string, m *protogen.Method, rule *annotations.Http
 	return md
 }
 
-func buildMethodDesc(serverName string, m *protogen.Method, method, path string) *methodDesc {
+func buildMethodDesc(m *protogen.Method, method, path string) *methodDesc {
 	defer func() { methodSets[m.GoName]++ }()
 	return &methodDesc{
 		Name:    m.GoName,
@@ -153,6 +169,21 @@ func camelCase(s string) string {
 	return string(t)
 }
 
+func camel2Case(name string) string {
+	buffer := make([]rune, 0)
+	for i, r := range name {
+		if unicode.IsUpper(r) {
+			if i != 0 {
+				buffer = append(buffer, '_')
+			}
+			buffer = append(buffer, unicode.ToLower(r))
+		} else {
+			buffer = append(buffer, r)
+		}
+	}
+	return string(buffer)
+}
+
 func isASCIILower(c byte) bool {
 	return 'a' <= c && c <= 'z'
 }
@@ -165,12 +196,11 @@ func ReadModUrl(modPath string) string {
 
 	modFilePath := modPath + "/go.mod"
 	if !CheckFileIsExist(modFilePath) {
-		return ""
+		panic("not mod found:" + modFilePath)
 	}
 	fileReader, err := os.OpenFile(modFilePath, os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
-		logger.Infof("open file failed, err:%s", err)
-		return ""
+		panic("open file failed:" + modFilePath)
 	}
 	defer fileReader.Close()
 	input := bufio.NewScanner(fileReader)

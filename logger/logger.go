@@ -14,6 +14,7 @@ const (
 	WarnLevel   = Level(3)
 	ErrorLevel  = Level(4)
 	FileMaxLine = 65536
+	debug       = false
 )
 
 // Level 日志输出级别。
@@ -50,9 +51,12 @@ func init() {
 
 //logs/appname/podname.time.log
 func tryNewFile(force bool) {
+	if !debug {
+		return
+	}
 	if lineCount > FileMaxLine || force {
 		// builf file path
-		timeStr := time.Now().Format("2006-01-02-15:04:05")
+		timeStr := time.Now().Format("20060102150405")
 		fileDir := logDir
 		filePath := fmt.Sprintf("%s/%s.log", fileDir, timeStr)
 		//try create dir
@@ -81,6 +85,9 @@ func tryNewFile(force bool) {
 }
 
 func formatAndWrite(l Level, format string, v ...interface{}) {
+	if !debug {
+		return
+	}
 	now := time.Now()
 	mutex.Lock()
 	defer mutex.Unlock()
