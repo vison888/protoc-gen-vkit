@@ -81,13 +81,13 @@ func generateOneHandler(gen *protogen.Plugin, file *protogen.File, handlePath st
 			WriteLine(fileWriter)
 			WriteLine(fileWriter, "package handler")
 
-			str, _ := os.Getwd()
-			importPath := fmt.Sprintf("%s/proto/%s", modUrl, file.GoPackageName)
-			logger.Infof("importPath1:%s str:%s", importPath, str)
-			if !strings.HasSuffix(str, "proto") {
-				logger.Infof("importPath2:%s", importPath)
-				importPath = fmt.Sprintf("%s/%s", ReadModUrl(str), file.GoPackageName)
-			}
+			// str, _ := os.Getwd()
+			importPath := fmt.Sprintf("%s/%s", modUrl, file.GoPackageName)
+			// logger.Infof("importPath1:%s str:%s", importPath, str)
+			// if !strings.HasSuffix(str, "proto") {
+			// 	logger.Infof("importPath2:%s", importPath)
+			// 	importPath = fmt.Sprintf("%s/%s", ReadModUrl(str), file.GoPackageName)
+			// }
 
 			WriteLine(fileWriter, fmt.Sprintf(`
 import (
