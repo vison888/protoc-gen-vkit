@@ -1,0 +1,337 @@
+syntax = "proto3";
+
+package sso;
+
+option go_package = "./sso";
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+
+service AuthService {
+  // 刷新url
+  rpc RefleshUrl(RefleshUrlReq) returns (RefleshUrlResp) {
+    option (google.api.http) = {
+      post: "/rpc/sso/auth/refleshUrl"
+      body: "*"
+    };
+  }
+  // 刷新角色缓存
+  rpc RefleshRole(RefleshRoleReq) returns (RefleshRoleResp) {
+    option (google.api.http) = {
+      post: "/rpc/sso/auth/refleshRole"
+      body: "*"
+    };
+  }
+  // 刷新缓存
+  rpc RefleshAll(RefleshAllReq) returns (RefleshAllResp) {
+    option (google.api.http) = {
+      post: "/rpc/sso/auth/refleshAll"
+      body: "*"
+    };
+  }
+  // 登录
+  rpc Login(LoginReq) returns (LoginResp) {
+    option (google.api.http) = {
+      post: "/rpc/sso/auth/login"
+      body: "*"
+    };
+  }
+  // 登出
+  rpc Logout(LogoutReq) returns (LogoutResp) {
+    option (google.api.http) = {
+      post: "/rpc/sso/auth/logout"
+      body: "*"
+    };
+  }
+}
+
+message RefleshUrlReq {
+}
+
+message RefleshUrlResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message RefleshRoleReq {
+  string id = 1[(validate.rules).string.min_len = 1];
+}
+
+message RefleshRoleResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message RefleshAllReq {
+}
+
+message RefleshAllResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message LoginReq {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  int32 code = 1;
+  string msg = 2;
+  string token =3;
+}
+
+
+message LogoutReq {
+}
+
+message LogoutResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+service RoleService {
+    // 添加角色
+    rpc Add(RoleAddReq) returns (RoleAddResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/role/add"
+        body: "*"
+      };
+    }
+    // 删除角色
+    rpc Del(RoleDelReq) returns (RoleDelResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/role/del"
+        body: "*"
+      };
+    }
+    // 获取角色
+    rpc Get(GetRoleReq) returns (GetRoleResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/role/get"
+        body: "*"
+      };
+    }
+    // 更新角色
+    rpc Update(RoleUpdateReq) returns (RoleUpdateResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/role/update"
+        body: "*"
+      };
+    }
+    // 角色列表
+    rpc Page(RolePageReq) returns (RolePageResp)
+      {
+          option (google.api.http) = {
+              post : "/rpc/sso/role/page"
+              body : "*"
+          };
+      }
+  }
+  
+  message Role {
+    //角色id
+    string id = 1;
+    //角色标识  
+    string code = 2 [(validate.rules).string.min_len = 6];
+    //角色名称  
+    string rolename = 3 [(validate.rules).string.min_len = 6];
+  }
+  
+  message RoleAddReq {
+    Role role = 1;
+  }
+  
+  message RoleAddResp {
+    int32 code = 1;
+    string msg = 2;
+    Role role = 3;
+  }
+  
+  message RoleDelReq {
+    string id = 1[(validate.rules).string.min_len = 1];
+  }
+  
+  message RoleDelResp {
+    int32 code = 1;
+    string msg = 2;
+    string id = 3;
+  }
+  
+  message RoleUpdateReq {
+    Role role = 1;
+  }
+  
+  message RoleUpdateResp {
+    int32 code = 1;
+    string msg = 2;
+    Role role = 3;
+  }
+  
+  message GetRoleReq {
+    string id = 1[(validate.rules).string.min_len = 1];
+  }
+  
+  message GetRoleResp {
+    int32 code = 1;
+    string msg = 2;
+    Role role = 3;
+  }
+  
+  message RolePageReq {
+    // 第几页，从1开始
+    int32 page = 1;
+    // 每页多少条
+    int32 size = 2 [(validate.rules).int32={lte: 100, gte: 10}];
+  }
+  
+  message RolePageResp {
+    int32 code = 1;
+    string msg = 2;
+    // 列表数量
+    int32 total = 3;
+    // 角色列表
+    repeated Role roles = 4;
+  }
+
+
+  service UserService {
+    // 添加用户
+    rpc Add(UserAddReq) returns (UserAddResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/user.add"
+        body: "*"
+      };
+    }
+    // 删除用户
+    rpc Del(UserDelReq) returns (UserDelResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/user.del"
+        body: "*"
+      };
+    }
+    // 获取用户
+    rpc Get(UserGetReq) returns (UserGetResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/user.get"
+        body: "*"
+      };
+    }
+    // 更新用户
+    rpc Update(UserUpdateReq) returns (UserUpdateResp) {
+      option (google.api.http) = {
+        post: "/rpc/sso/user.update"
+        body: "*"
+      };
+    }
+    // 用户列表
+    rpc Page(UserPageReq) returns (UserPageResp)
+      {
+          option (google.api.http) = {
+              post : "/rpc/sso/user.page"
+              body : "*"
+          };
+      }
+  }
+  
+  message User {
+    //用户id
+    string id = 1;
+    //用户名称  
+    string username = 2 [(validate.rules).string.min_len = 6];
+    //用户密码 
+    string password = 3 [(validate.rules).string.min_len = 6];
+    //用户头像
+    string avatar = 4;
+    //用户昵称
+    string nickname = 5;
+  }
+  
+  message UserAddReq {
+    User user = 1;
+  }
+  
+  message UserAddResp {
+    int32 code = 1;
+    string msg = 2;
+    User user = 3;
+  }
+  
+  message UserDelReq {
+    string id = 1[(validate.rules).string.min_len = 1];
+  }
+  
+  message UserDelResp {
+    int32 code = 1;
+    string msg = 2;
+    string id = 3;
+  }
+  
+  message UserUpdateReq {
+    User user = 1;
+  }
+  
+  message UserUpdateResp {
+    int32 code = 1;
+    string msg = 2;
+    User user = 3;
+  }
+  
+  message UserGetReq {
+    string id = 1[(validate.rules).string.min_len = 1];
+  }
+  
+  message UserGetResp {
+    int32 code = 1;
+    string msg = 2;
+    User user = 3;
+  }
+  
+  message UserPageReq {
+    // 第几页，从1开始
+    int32 page = 1;
+    // 每页多少条
+    int32 size = 2 [(validate.rules).int32={lte: 100, gte: 10}];
+  }
+  
+  message UserPageResp {
+    int32 code = 1;
+    string msg = 2;
+    // 列表数量
+    int32 total = 3;
+    // 用户列表
+    repeated User users = 4;
+  }
+
+service TestStreamService {
+  /*
+  以下 分别是 服务端 推送流(req)， 客户端 推送流 ，双向流。
+  */
+  rpc GetStream (StreamReqData) returns (stream StreamResData){
+    option (google.api.http) = {
+      post: "/rpc/sso/stream/getstream"
+      body: "*"
+    };
+  }
+  rpc PutStream (stream StreamReqData) returns (StreamResData){
+    option (google.api.http) = {
+      post: "/rpc/sso/stream/putstream"
+      body: "*"
+    };
+  }
+  rpc AllStream (stream StreamReqData) returns (stream StreamResData){
+    option (google.api.http) = {
+      post: "/rpc/sso/stream/allstream"
+      body: "*"
+    };
+  }
+}
+
+  //stream请求结构
+message StreamReqData {
+  string data = 1;
+}
+
+//stream返回结构
+message StreamResData {
+  string data = 1;
+}

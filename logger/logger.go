@@ -49,7 +49,7 @@ func init() {
 	tryNewFile(true)
 }
 
-//logs/appname/podname.time.log
+// logs/appname/podname.time.log
 func tryNewFile(force bool) {
 	if !debug {
 		return
@@ -102,7 +102,7 @@ func formatAndWrite(l Level, format string, v ...interface{}) {
 	tryNewFile(false)
 }
 
-//[level][time][NODE_NAME][POD_NAME][APP_NAME] msg
+// [level][time][NODE_NAME][POD_NAME][APP_NAME] msg
 func formatHeader(buf *[]byte, l Level, t time.Time) {
 	*buf = append(*buf, l.String()...)
 	timeStr := t.Format("[2006-01-02 15:04:05.000000]")

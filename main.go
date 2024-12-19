@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/visonlv/protoc-gen-vkit/gen_proto"
+	"git.infore-robotics.cn/service-robotics-department-2/protoc-gen-infore/gen_proto"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/pluginpb"
