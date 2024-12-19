@@ -8,7 +8,7 @@ import (
 	"strings"
 	"unicode"
 
-	"git.infore-robotics.cn/service-robotics-department-2/protoc-gen-infore/logger"
+	"github.com/vison888/protoc-gen-vkit/logger"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/compiler/protogen"
 )

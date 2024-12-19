@@ -1,4 +1,4 @@
-module git.infore-robotics.cn/service-robotics-department-2/protoc-gen-infore
+module github.com/vison888/protoc-gen-vkit
 
 go 1.20
 
