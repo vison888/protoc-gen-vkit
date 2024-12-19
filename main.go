@@ -43,7 +43,7 @@ func main() {
 		panic(err)
 	}
 
-	gen_proto.GenerateInforePb(plugin)
+	gen_proto.GenerateKitPb(plugin)
 	if handlePath != "" {
 		gen_proto.CreateDir(handlePath)
 		gen_proto.GenerateHandler(plugin, handlePath)
